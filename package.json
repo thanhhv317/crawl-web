@@ -18,7 +18,6 @@
     "morgan": "~1.9.1",
     "puppeteer": "^3.0.0",
     "request": "^2.88.2",
-    "request-promise": "^4.2.5",
-    "slugify": "^1.4.0"
+    "request-promise": "^4.2.5"
   }
 }
