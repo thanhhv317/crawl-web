@@ -26,7 +26,6 @@ module.exports = {
 
 
         // crawl data
-        const domain = "https://kipalog.com";
         const browser = await puppeteer.launch({ headless: false });
 
         await Promise.mapSeries(links, async (link) => {
