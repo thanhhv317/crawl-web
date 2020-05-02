@@ -8,11 +8,13 @@ router.get("/", (req, res, next) => {
 });
 
 /* POST crawl data . */
-router.post("/crawl", postsController.crawlAllData);
+router.post("/posts/crawl", postsController.crawlAllData);
 
 router.get("/posts/:slug", postsController.getPostBySlug);
 
 /* GET home page. */
 router.get("/view", postsController.readData);
+
+router.get("/posts", postsController.getListPosts);
 
 module.exports = router;
