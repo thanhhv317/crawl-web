@@ -2,15 +2,16 @@ const puppeteer = require('puppeteer');
 const request = require("request-promise");
 const Promise = require("bluebird");
 const trim = require("lodash/trim");
-const Posts = require('../models/crawl');
+const Posts = require('../models/posts');
 const { convertText2Slug } = require("../utils");
 module.exports = {
-    async crawl(req, res) {
+    crawlAllData: async (req, res) => {
         // get links
         let i = 1;
-        const links = []
+        const links = [];
+        const domain = "https://kipalog.com";
         while (true) {
-            const data = await request(`https://kipalog.com/tags/Javascript/pagination?page=${i++}`);
+            const data = await request(`${domain}/tags/Javascript/pagination?page=${i++}`);
             const articles = JSON.parse(data);
 
             if (articles.length === 0) {
@@ -67,16 +68,16 @@ module.exports = {
         })
     },
 
-    async readData(req, res) {
-        const posts = await Posts.find({});
+    readData: async (req, res) => {
+        const posts = await Posts.find({}).lean();
         return res.render('crawl/index', { title: 'crawl web', data: posts });
     },
 
-    async getPostBySlug(req, res) {
+    getPostBySlug: async (req, res) => {
         const slug = req.params.slug;
         const post = await Posts.find({
             slug
-        })
+        }).lean();
         return res.json({
             success: true,
             data: post
