@@ -3,15 +3,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
 const postsRouter = require('./routes/posts');
 const usersRouter = require('./routes/users');
-
+require('dotenv').config();
 
 const mongoose = require('mongoose');
 
 // mongoose.connect('mongodb://localhost/crawl-web', {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.connect('mongodb://thanh:Thanh200698@cluster0-shard-00-00-hg2tr.mongodb.net:27017,cluster0-shard-00-01-hg2tr.mongodb.net:27017,cluster0-shard-00-02-hg2tr.mongodb.net:27017/crawl-web?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.DB_CONNECTION, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const app = express();
 
