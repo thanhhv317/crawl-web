@@ -3,7 +3,11 @@ const request = require("request-promise");
 const Promise = require("bluebird");
 const trim = require("lodash/trim");
 const Posts = require("../models/posts");
+const cheerio = require("cheerio");
+const moment = require("moment");
 const { convertText2Slug } = require("../utils");
+
+const getDate = (date) => (date ? moment(date, "DD/MM/YYYY").toDate() : date);
 module.exports = {
   crawlAllData: async (req, res) => {
     // get links
@@ -21,7 +25,10 @@ module.exports = {
       }
 
       articles.forEach((article) => {
-        links.push(article.path);
+        links.push({
+          path: article.path,
+          preview: article.preview
+        });
       });
     }
 
@@ -29,8 +36,20 @@ module.exports = {
     const browser = await puppeteer.launch({ headless: false });
 
     await Promise.mapSeries(links, async (link) => {
+      // const result = await request(`${domain}${link.path}`);
+      // const $ = cheerio.load(result);
+
+      // const title = $("h1 strong").text();
+      // const slug = convertText2Slug(title);
+      // const author = $("div.info .name h3").text();
+      // const avatar = $("div .meta-profile > a > img.lazy").attr("src");
+      // const { preview } = link;
+      // const content = $("div #content").html();
+      // const text = $("h1 .published .date").text()
+      // const createdDate = getDate(text.replace(/[^\d\/]/g, ""));
+
       const page = await browser.newPage();
-      await page.goto(`${domain}${link}`);
+      await page.goto(`${domain}${link.path}`);
       const title = await page.evaluate(() => {
         return document.querySelector("h1 strong").innerText;
       });
@@ -48,12 +67,22 @@ module.exports = {
       const content = await page.evaluate(() => {
         return document.querySelector("div #content").innerHTML;
       });
+
+      const { preview } = link;
+
+      const text = await page.evaluate(() => {
+        return document.querySelector("h1 .published .date").innerText;
+      });
+
+      const createdDate = getDate(text.replace(/[^\d\/]/g, ""));
       const post = Posts({
         title,
         slug,
         author: trim(author, " \n"),
         avatar,
         content,
+        preview,
+        createdDate
       });
       await post.save();
       console.log(title);
@@ -86,8 +115,8 @@ module.exports = {
   getListPosts: async (req, res) => {
     const { page = 1 } = req.query;
     const limit = 20;
-    const skip = page * 20;
-    const listPosts = await Posts.find({}, { title: 1, avatar: 1 })
+    const skip = (page -1) * 20;
+    const listPosts = await Posts.find({}, { content: 0, avatar: 0 })
       .sort({ createdDate: -1 })
       .limit(limit)
       .skip(skip)

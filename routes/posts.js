@@ -4,7 +4,7 @@ const postsController = require("../controllers/posts");
 
 /* GET home page. */
 router.get("/", (req, res, next) => {
-  res.render("index", { title: "Express" });
+  res.render("index", { title: "Blog-MT" });
 });
 
 /* POST crawl data . */

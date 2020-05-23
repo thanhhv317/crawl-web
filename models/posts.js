@@ -16,13 +16,17 @@ const postSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    preview: {
+        type: String,
+        required: true
+    },
     content: {
         type: String,
         require: true
     },
     createdDate: {
         type: Date,
-        default: Date.now
+        require: true
     }
 })
 module.exports = mongoose.model('Posts', postSchema)
